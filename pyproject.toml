@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "django_backend"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.7"
 django = "^4.2.4"
 djangorestframework = "^3.14.0"
 
