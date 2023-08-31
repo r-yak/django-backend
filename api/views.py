@@ -9,7 +9,7 @@ from api.models import Drug
 from api.serializers import DrugSerializer
 
 
-class PredictView(ListAPIView):
+class SearchView(ListAPIView):
     serializer_class = DrugSerializer
     queryset = Drug.objects
 

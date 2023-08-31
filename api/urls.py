@@ -4,6 +4,6 @@ from api import views
 
 
 urlpatterns = [
-    path('predict/', views.PredictView.as_view()),
+    path('search/', views.SearchView.as_view()),
     path('upload/', views.UploadView.as_view()),
 ]
