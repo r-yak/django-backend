@@ -16,6 +16,7 @@ opencv-python = "^4.8.0.76"
 opencv-contrib-python = "^4.8.0.76"
 colorgram-py = "^1.2.0"
 pillow = "^10.0.0"
+colour-science = "^0.4.3"
 
 
 [build-system]
