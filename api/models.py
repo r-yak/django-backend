@@ -74,3 +74,15 @@ class DosageUnitChoices(models.Choices):
     GRAM = 'g', '그램'
     MILI_LITER = 'mL', '밀리리터'
     PERCENT = '%', '퍼센트'
+
+
+class Prediction(models.Model):
+    raw_image = models.ImageField(upload_to='prediction/image-raw/')
+    image = models.ImageField(upload_to='prediction/image/')
+    name = models.CharField(max_length=4000)
+    dosage_form = models.TextField(choices=DosageFormChoices.choices)
+    dosage = models.IntegerField()
+    dosage_unit = models.TextField(choices=DosageUnitChoices.choices)
+    shape = models.TextField(choices=ShapeChoices.choices)
+    color = models.TextField(choices=ColorChoices.choices)
+    created_at = models.DateTimeField(auto_now=True)
