@@ -61,3 +61,8 @@ class ShapeChoices(models.TextChoices):
     PENTAGON = 'pentagon', '오각형'
     HEXAGON = 'hexagon', '육각형'
     OCTAGON = 'octagon', '팔각형'
+
+
+class DosageFormChoices(models.Choices):
+    CAPSULE = 'capsule', '캡슐'
+    TABLET = 'tablet', '정제'
