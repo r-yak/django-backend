@@ -66,3 +66,11 @@ class ShapeChoices(models.TextChoices):
 class DosageFormChoices(models.Choices):
     CAPSULE = 'capsule', '캡슐'
     TABLET = 'tablet', '정제'
+
+
+class DosageUnitChoices(models.Choices):
+    MILI_GRAM = 'mg', '밀리그램'
+    MICRO_GRAM = 'mcg', '마이크로그램'
+    GRAM = 'g', '그램'
+    MILI_LITER = 'mL', '밀리리터'
+    PERCENT = '%', '퍼센트'
