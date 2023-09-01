@@ -47,3 +47,17 @@ class ColorChoices(models.TextChoices):
     WHITE = 'white', 'W - 하양(백)'
     GRAY = 'gray', 'Gy - 회색(회)'
     BLACK = 'black', 'Bk - 검정(흑)'
+
+
+class ShapeChoices(models.TextChoices):
+    CIRCLE = 'circle', '원형'
+    OVAL = 'oval', '타원형'
+    SEMICIRCLE = 'semicircle', '반원형'
+    OBLONG = 'oblong', '장방형'
+    SQUARE = 'square', '정사각형'
+    RECTANGLE = 'rectangle', '직사각형'
+    DIAMOND = 'diamond', '다이아몬드형'
+    TRIANGLE = 'triangle', '삼각형'
+    PENTAGON = 'pentagon', '오각형'
+    HEXAGON = 'hexagon', '육각형'
+    OCTAGON = 'octagon', '팔각형'
