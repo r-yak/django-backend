@@ -29,3 +29,21 @@ class Drug(models.Model):
     MARK_CODE_BACK_IMG = models.CharField(verbose_name="마크이미지(뒤)", max_length=100, null=True)
     ITEM_ENG_NAME = models.CharField(verbose_name="제품영문명", max_length=2000, null=True, blank=True)
     EDI_CODE = models.CharField(verbose_name="보험코드", max_length=100, null=True)
+
+
+class ColorChoices(models.TextChoices):
+    RED = 'red', 'R - 빨강(적)'
+    ORANGE = 'orange', 'O - 주황'
+    YELLOW = 'yellow', 'Y - 노랑(황)'
+    YELLOW_GREEN = 'yellow-green', 'YG - 연두'
+    GREEN = 'green', 'G - 초록(녹)'
+    BLUE_GREEN = 'blue-green', 'BG - 청록'
+    BLUE = 'blue', 'B - 파랑(청)'
+    BLUISH_VIOLET = 'bluish-violet', 'bV - 남색(남)'
+    BLUISH_PURPLE = 'bluish-purple', 'bP - 보라'
+    REDDISH_PURPLE = 'reddish-purple', 'rP - 자주(자)'
+    PINK = 'pink', 'Pk - 분홍'
+    BROWN = 'brown', 'Br - 갈색(갈)'
+    WHITE = 'white', 'W - 하양(백)'
+    GRAY = 'gray', 'Gy - 회색(회)'
+    BLACK = 'black', 'Bk - 검정(흑)'
