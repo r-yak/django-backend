@@ -63,12 +63,12 @@ class ShapeChoices(models.TextChoices):
     OCTAGON = 'octagon', '팔각형'
 
 
-class DosageFormChoices(models.Choices):
+class DosageFormChoices(models.TextChoices):
     CAPSULE = 'capsule', '캡슐'
     TABLET = 'tablet', '정제'
 
 
-class DosageUnitChoices(models.Choices):
+class DosageUnitChoices(models.TextChoices):
     MILI_GRAM = 'mg', '밀리그램'
     MICRO_GRAM = 'mcg', '마이크로그램'
     GRAM = 'g', '그램'
