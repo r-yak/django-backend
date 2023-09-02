@@ -38,10 +38,9 @@ class PredictionModel:
         bin_mat = cv2.morphologyEx(bin_mat, cv2.MORPH_CLOSE, _get_structuring_element())
         contours = cv2.findContours(bin_mat, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]
         if not contours:
+            # TODO: 검출 실패한 데이터 수집
             raise exceptions.NotDetectedException('알약이 검출되지 않았습니다.')
-        if len(contours) > 1:
-            raise exceptions.MultipleDetectedException('동시에 여러 개의 알약은 검출할 수 없습니다.')
-        return contours[0]
+        return max(contours, key=lambda cont:cv2.arcLength(cont, True))
 
     def _remove_background(self, mat: cv2.typing.MatLike, contour: typing.Sequence[cv2.typing.MatLike]) -> cv2.typing.MatLike:
         bin_mat = numpy.zeros(mat.shape[:2], dtype=numpy.uint8)
