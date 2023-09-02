@@ -76,13 +76,20 @@ class DosageUnitChoices(models.Choices):
     PERCENT = '%', '퍼센트'
 
 
-class Prediction(models.Model):
-    raw_image = models.ImageField(upload_to='prediction/image-raw/')
-    image = models.ImageField(upload_to='prediction/image/')
+class Drug(models.Model):
+    specification = models.ForeignKey(DrugFullSpecification, on_delete=models.DO_NOTHING, null=True)
     name = models.CharField(max_length=4000)
     dosage_form = models.TextField(choices=DosageFormChoices.choices)
-    dosage = models.IntegerField()
-    dosage_unit = models.TextField(choices=DosageUnitChoices.choices)
+    dosage = models.IntegerField(null=True)
+    dosage_unit = models.TextField(choices=DosageUnitChoices.choices, null=True)
+    shape = models.TextField(choices=ShapeChoices.choices)
+    color = models.TextField(choices=ColorChoices.choices)
+
+
+class Prediction(models.Model):
+    raw_image = models.ImageField(upload_to='prediction/image-raw/', width_field=256, height_field=256)
+    image = models.ImageField(upload_to='prediction/image/', width_field=256, height_field=256)
+    drug = models.ForeignKey(Drug, on_delete=models.SET_NULL, null=True)
     shape = models.TextField(choices=ShapeChoices.choices)
     color = models.TextField(choices=ColorChoices.choices)
     created_at = models.DateTimeField(auto_now=True)
