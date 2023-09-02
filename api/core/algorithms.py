@@ -59,12 +59,18 @@ class PredictionModel:
     raw_mat: cv2.typing.MatLike
     mat: cv2.typing.MatLike
     contour: typing.Sequence[cv2.typing.MatLike]
+    shape: ShapeChoices
+    color: ColorChoices
+    drug: typing.Optional[Drug]
 
     def __init__(self, mat: cv2.typing.MatLike) -> None:
         self.raw_mat = self._resize(mat)
         self.mat = self._white_balance(self.raw_mat)
         self.contour = self._find_contour(self.mat)
         self.mat = self._remove_background(self.raw_mat, self.contour)
+        self.shape = self._predict_shape()
+        self.color = self._predict_color()
+        self.drug = self._predict_drug()
 
     def _resize(self, mat: cv2.typing.MatLike) -> cv2.typing.MatLike:
         return cv2.resize(mat, __class__.IMG_SHAPE)
@@ -89,7 +95,7 @@ class PredictionModel:
         mask = cv2.drawContours(bin_mat, [contour], -1, 255, -1)
         return cv2.copyTo(mat, mask)
 
-    def predict_shape(self) -> ShapeChoices:
+    def _predict_shape(self) -> ShapeChoices:
         arc_length = cv2.arcLength(self.contour, True)
         approx_contour = cv2.approxPolyDP(self.contour, __class__.APPROX_EPSILON * arc_length, True)
         n_vertices = len(approx_contour)
@@ -104,7 +110,7 @@ class PredictionModel:
         else:
             return ShapeChoices.CIRCLE
 
-    def predict_color(self) -> ColorChoices:
+    def _predict_color(self) -> ColorChoices:
         colors: typing.List[colorgram.Color]
         mat = cv2.resize(self.mat, (64, 64))
         mat = cv2.bilateralFilter(mat, -1, 32.0, 8.0)
@@ -131,8 +137,8 @@ class PredictionModel:
             code=color_munsell[3],
         )
 
-    def predict_drug(self) -> typing.Optional[Drug]:
-        return None
+    def _predict_drug(self) -> typing.Optional[Drug]:
+        pass
 
 
 @functools.cache
