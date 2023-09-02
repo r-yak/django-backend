@@ -1,11 +1,14 @@
 import pandas
 
+from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from api.core import converters
+from api.core.algorithms import PredictionModel
 from api.models import DrugFullSpecification
 from api.serializers import DrugSerializer, PredictionSerializer
 
@@ -34,3 +37,13 @@ class UploadView(CreateAPIView):
 class PredictView(CreateAPIView):
     serializer_class = PredictionSerializer
     image_field_name = 'raw_image'
+
+    def perform_create(self, serializer: PredictionSerializer):
+        file: UploadedFile = serializer.validated_data[__class__.image_field_name]
+        model = PredictionModel(converters.convert_file_to_mat(file))
+        serializer.save(
+            image=converters.convert_mat_to_file(model.mat, filename=file.name),
+            drug=model.predict_drug(),
+            shape=model.predict_shape(),
+            color=model.predict_color(),
+        )
