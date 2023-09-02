@@ -9,6 +9,49 @@ from api.core import exceptions
 from api.models import ColorChoices, Drug, ShapeChoices
 
 
+@dataclasses.dataclass
+class _MunsellColor:
+    step: float
+    hue: str
+    value: float
+    chroma: float
+
+    def is_colorless(self) -> bool:
+        return self.chroma < 4.0 or self.value < 2.0 or self.value > 9.0
+
+    def to_color_choice(self) -> ColorChoices:
+        if self.is_colorless():
+            if self.value < 2.5:
+                return ColorChoices.BLACK
+            elif self.value < 7.0:
+                return ColorChoices.GRAY
+            else:
+                return ColorChoices.WHITE
+        match self.hue.lower():
+            case 'r':
+                return ColorChoices.RED
+            case 'yr':
+                return ColorChoices.ORANGE
+            case 'y':
+                return ColorChoices.YELLOW
+            case 'gy':
+                return ColorChoices.YELLOW_GREEN
+            case 'g':
+                return ColorChoices.GREEN
+            case 'bg':
+                return ColorChoices.BLUE_GREEN
+            case 'b':
+                return ColorChoices.BLUE
+            case 'pb':
+                return ColorChoices.BLUISH_VIOLET
+            case 'p':
+                return ColorChoices.BLUISH_PURPLE
+            case 'rp':
+                return ColorChoices.REDDISH_PURPLE
+            case _:
+                return ColorChoices.UNKNOWN
+
+
 class PredictionModel:
     IMG_SHAPE = (256, 256)
     APPROX_EPSILON = 0.04
