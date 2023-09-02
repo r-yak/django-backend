@@ -106,7 +106,36 @@ class PredictionModel:
             return ShapeChoices.CIRCLE
 
     def predict_color(self) -> ColorChoices:
-        return ColorChoices.UNKNOWN
+        colors: typing.List[colorgram.Color]
+        mat = cv2.resize(self.mat, (64, 64))
+        mat = cv2.bilateralFilter(mat, -1, 32.0, 8.0)
+        mat = cv2.cvtColor(mat, cv2.COLOR_BGR2RGB)
+        img = PIL.Image.fromarray(mat)
+        colors = colorgram.extract(img, 2)
+        if len(colors) < 2:
+            raise exceptions.ColorNotDetectedException('색상이 검출되지 않았습니다.')
+        color = colors[1] # colors[0]는 가장 많은 색상 = 배경 색상이므로 무시한다.
+        munsell = self._to_munsell(color)
+        print(munsell)
+        return munsell.to_color_choice()
+
+    def _to_munsell(self, color: colorgram.Color) -> _MunsellColor:
+        """colorgram이 감지한 색상을 Munsell 색 체계로 변환"""
+        color_rgb = list(map(lambda x: x / 255.0, color.rgb))
+        color_XYZ = colour.RGB_to_XYZ(color_rgb, colour.models.RGB_COLOURSPACE_sRGB)
+        color_xyY = colour.XYZ_to_xyY(color_XYZ)
+        color_munsell = colour.xyY_to_munsell_colour(color_xyY)
+        m = self._get_munsell_pattern().match(color_munsell)
+        return _MunsellColor(
+            step=float(m.group('step')),
+            hue=m.group('hue'),
+            value=float(m.group('value')),
+            chroma=float(m.group('chroma')),
+        )
+
+    @functools.cache
+    def _get_munsell_pattern(self) -> re.Pattern:
+        return re.compile(r"(?P<step>(\d*\.)?\d+)(?P<hue>\w+) (?P<value>(\d*\.)?\d+)/(?P<chroma>(\d*\.)?\d+)")
 
     def predict_drug(self) -> typing.Optional[Drug]:
         return None
