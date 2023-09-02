@@ -138,7 +138,10 @@ class PredictionModel:
         )
 
     def _predict_drug(self) -> typing.Optional[Drug]:
-        pass
+        return Drug.objects.filter(
+            color=self.color,
+            shape=self.shape,
+        ).first()
 
 
 @functools.cache
