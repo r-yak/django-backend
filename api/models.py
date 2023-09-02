@@ -48,6 +48,7 @@ class ColorChoices(models.TextChoices):
     WHITE = 'white', 'W - 하양(백)'
     GRAY = 'gray', 'Gy - 회색(회)'
     BLACK = 'black', 'Bk - 검정(흑)'
+    UNKNOWN = 'unknown', '검출 실패'
 
 
 class ShapeChoices(models.TextChoices):
@@ -62,6 +63,7 @@ class ShapeChoices(models.TextChoices):
     PENTAGON = 'pentagon', '오각형'
     HEXAGON = 'hexagon', '육각형'
     OCTAGON = 'octagon', '팔각형'
+    UNKNOWN = 'unknown', '검출 실패'
 
 
 class DosageFormChoices(models.TextChoices):
