@@ -10,6 +10,6 @@ def convert_file_to_mat(file: File) -> cv2.Mat:
     return cv2.imdecode(buf, cv2.IMREAD_COLOR)
 
 
-def convert_mat_to_file(mat: cv2.Mat) -> File:
+def convert_mat_to_file(mat: cv2.Mat, filename: str = 'image.png') -> File:
     ret, buf = cv2.imencode('.png', mat)
-    return ContentFile(buf.tobytes(), name='preprocessed.png')
+    return ContentFile(buf.tobytes(), name=filename)
