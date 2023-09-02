@@ -13,3 +13,4 @@ class PredictionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prediction
         fields = '__all__'
+        read_only_fields = ['color', 'drug', 'image', 'shape']
