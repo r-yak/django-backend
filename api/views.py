@@ -9,13 +9,13 @@ from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.response import Response
 
 from api.core import predict
-from api.models import Drug
+from api.models import DrugFullSpecification
 from api.serializers import DrugSerializer
 
 
 class SearchView(ListAPIView):
     serializer_class = DrugSerializer
-    queryset = Drug.objects
+    queryset = DrugFullSpecification.objects
 
 
 class UploadView(CreateAPIView):

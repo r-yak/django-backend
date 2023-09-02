@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Drug(models.Model):
+class DrugFullSpecification(models.Model):
     ITEM_SEQ = models.IntegerField(verbose_name="품목일련번호")
     ITEM_NAME = models.CharField(verbose_name="품목명", max_length=4000)
     ENTP_SEQ = models.IntegerField(verbose_name="업체일련번호")

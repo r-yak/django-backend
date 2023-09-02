@@ -1,11 +1,11 @@
 from rest_framework import serializers
 
-from api.models import Drug, Prediction
+from api.models import DrugFullSpecification, Prediction
 
 
 class DrugSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Drug
+        model = DrugFullSpecification
         fields = '__all__'
 
 
