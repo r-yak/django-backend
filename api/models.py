@@ -1,3 +1,4 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
 
 
@@ -87,7 +88,7 @@ class Drug(models.Model):
 
 
 class Prediction(models.Model):
-    raw_image = models.ImageField(upload_to='prediction/image-raw/')
+    raw_image = models.ImageField(upload_to='prediction/image-raw/', validators=[FileExtensionValidator(['jpg', 'png'])])
     image = models.ImageField(upload_to='prediction/image/')
     drug = models.ForeignKey(Drug, on_delete=models.SET_NULL, null=True)
     shape = models.TextField(choices=ShapeChoices.choices)
