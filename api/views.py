@@ -2,6 +2,7 @@ import pandas
 
 from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.request import Request
@@ -39,6 +40,7 @@ class PredictView(CreateAPIView):
     image_field_name = 'raw_image'
 
     def perform_create(self, serializer: PredictionSerializer):
+        requested_at = timezone.now()
         file: UploadedFile = serializer.validated_data[__class__.image_field_name]
         model = PredictionModel(converters.convert_file_to_mat(file))
         serializer.save(
@@ -46,4 +48,5 @@ class PredictView(CreateAPIView):
             drug=model.predict_drug(),
             shape=model.predict_shape(),
             color=model.predict_color(),
+            requested_at=requested_at,
         )

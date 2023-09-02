@@ -96,3 +96,4 @@ class Prediction(models.Model):
     shape = models.TextField(choices=ShapeChoices.choices)
     color = models.TextField(choices=ColorChoices.choices)
     created_at = models.DateTimeField(auto_now=True)
+    requested_at = models.DateTimeField()
