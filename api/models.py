@@ -87,8 +87,8 @@ class Drug(models.Model):
 
 
 class Prediction(models.Model):
-    raw_image = models.ImageField(upload_to='prediction/image-raw/', width_field=256, height_field=256)
-    image = models.ImageField(upload_to='prediction/image/', width_field=256, height_field=256)
+    raw_image = models.ImageField(upload_to='prediction/image-raw/')
+    image = models.ImageField(upload_to='prediction/image/')
     drug = models.ForeignKey(Drug, on_delete=models.SET_NULL, null=True)
     shape = models.TextField(choices=ShapeChoices.choices)
     color = models.TextField(choices=ColorChoices.choices)
