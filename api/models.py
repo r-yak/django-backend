@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+import os.path
+
 from django.core.validators import FileExtensionValidator
 from django.db import models
 
@@ -89,9 +93,22 @@ class Drug(models.Model):
     color = models.TextField(choices=ColorChoices.choices)
 
 
+def get_upload_path() -> str:
+    return 'prediction/image/'
+
+def get_upload_path_of_raw(obj: Prediction, filename: str) -> str:
+    basename, extension = os.path.splitext(filename)
+    return os.path.join(get_upload_path(), basename+'-raw'+extension)
+
+def get_upload_path_of_mask(obj: Prediction, filename: str) -> str:
+    basename, extension = os.path.splitext(filename)
+    return os.path.join(get_upload_path(), basename+'-mask'+extension)
+
+
 class Prediction(models.Model):
-    raw_image = models.ImageField(upload_to='prediction/image-raw/', validators=[FileExtensionValidator(['jpg', 'png'])])
-    image = models.ImageField(upload_to='prediction/image/')
+    image = models.ImageField(upload_to=get_upload_path)
+    raw_image = models.ImageField(upload_to=get_upload_path_of_raw, validators=[FileExtensionValidator(['jpg', 'png'])])
+    mask_image = models.ImageField(upload_to=get_upload_path_of_mask)
     drug = models.ForeignKey(Drug, on_delete=models.SET_NULL, null=True)
     shape = models.TextField(choices=ShapeChoices.choices)
     color = models.TextField(choices=ColorChoices.choices)
