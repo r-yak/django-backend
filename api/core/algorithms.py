@@ -1,6 +1,5 @@
 import dataclasses
 import functools
-import re
 import typing
 
 import colorgram
@@ -58,16 +57,22 @@ class PredictionModel:
 
     raw_mat: cv2.typing.MatLike
     mat: cv2.typing.MatLike
+    bin_mat: cv2.typing.MatLike
     contour: typing.Sequence[cv2.typing.MatLike]
     shape: ShapeChoices
     color: ColorChoices
     drug: typing.Optional[Drug]
 
     def __init__(self, mat: cv2.typing.MatLike) -> None:
-        self.raw_mat = self._resize(mat)
-        self.mat = self._white_balance(self.raw_mat)
-        self.contour = self._find_contour(self.mat)
-        self.mat = self._remove_background(self.raw_mat, self.contour)
+        raw_mat = self._resize(mat)
+        mat = self._white_balance(raw_mat)
+        mat = self._denoise(mat)
+        bin_mat = self._draw_mask_via_contour(mat)
+        mat = cv2.copyTo(raw_mat, bin_mat)
+
+        self.raw_mat = raw_mat
+        self.mat = mat
+        self.bin_mat = bin_mat
         self.shape = self._predict_shape()
         self.color = self._predict_color()
         self.drug = self._predict_drug()
@@ -80,24 +85,39 @@ class PredictionModel:
         mat = _get_white_balancer().balanceWhite(mat)
         return cv2.cvtColor(mat, cv2.COLOR_LAB2BGR)
 
-    def _find_contour(self, mat: cv2.typing.MatLike) -> typing.Sequence[cv2.typing.MatLike]:
-        mat = cv2.bilateralFilter(mat, -1, 32.0, 8.0)
+    def _denoise(self, mat: cv2.typing.MatLike) -> cv2.typing.MatLike:
+        mat = cv2.medianBlur(mat, 5)
+        return cv2.bilateralFilter(mat, -1, 32.0, 8.0)
+
+    def _draw_mask_via_contour(self, mat: cv2.typing.MatLike) -> cv2.typing.MatLike:
         bin_mat = cv2.Canny(mat, 0, 255)
-        bin_mat = cv2.morphologyEx(bin_mat, cv2.MORPH_CLOSE, _get_structuring_element())
+        bin_mat = cv2.morphologyEx(bin_mat, cv2.MORPH_CLOSE, _get_structuring_element(7))
         contours = cv2.findContours(bin_mat, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]
         if not contours:
             # TODO: 검출 실패한 데이터 수집
             raise exceptions.NotDetectedException('알약이 검출되지 않았습니다.')
-        return max(contours, key=lambda cont:cv2.arcLength(cont, True))
+        contour = max(contours, key=lambda cont:cv2.arcLength(cont, True))
+        return cv2.drawContours(bin_mat, [contour], -1, 255, -1)
 
-    def _remove_background(self, mat: cv2.typing.MatLike, contour: typing.Sequence[cv2.typing.MatLike]) -> cv2.typing.MatLike:
-        bin_mat = numpy.zeros(mat.shape[:2], dtype=numpy.uint8)
-        mask = cv2.drawContours(bin_mat, [contour], -1, 255, -1)
-        return cv2.copyTo(mat, mask)
+    def _draw_mask_via_chromakey(self, mat: cv2.typing.MatLike) -> cv2.typing.MatLike:
+        error = 0.075
+        mat = cv2.medianBlur(mat, 5)
+        bg_color = numpy.mean(mat[[0,0,-1,-1],[0,-1,-1,0]], axis=0)
+        lowerb = ((1-error) * bg_color).astype(numpy.uint8)
+        upperb = ((1+error) * bg_color).astype(numpy.uint8)
+        bin_mat = 255 - cv2.inRange(mat, lowerb, upperb)
+        bin_mat = cv2.morphologyEx(bin_mat, cv2.MORPH_OPEN, _get_structuring_element(15))
+        bin_mat = cv2.morphologyEx(bin_mat, cv2.MORPH_CLOSE, _get_structuring_element(7))
+        return bin_mat
 
     def _predict_shape(self) -> ShapeChoices:
-        arc_length = cv2.arcLength(self.contour, True)
-        approx_contour = cv2.approxPolyDP(self.contour, __class__.APPROX_EPSILON * arc_length, True)
+        contours = cv2.findContours(self.bin_mat, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]
+        if not contours:
+            # TODO: 검출 실패한 데이터 수집
+            raise exceptions.ShapeNotDetectedException('알약이 검출되지 않았습니다.')
+        contour =  max(contours, key=lambda cont:cv2.arcLength(cont, True))
+        arc_length = cv2.arcLength(contour, True)
+        approx_contour = cv2.approxPolyDP(contour, __class__.APPROX_EPSILON * arc_length, True)
         n_vertices = len(approx_contour)
         if n_vertices == 3:
             return ShapeChoices.TRIANGLE
@@ -150,5 +170,5 @@ def _get_white_balancer() -> cv2.xphoto.WhiteBalancer:
 
 
 @functools.cache
-def _get_structuring_element() -> cv2.Mat:
-    return cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
+def _get_structuring_element(ksize: int) -> cv2.Mat:
+    return cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (ksize, ksize))
