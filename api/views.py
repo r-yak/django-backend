@@ -46,7 +46,6 @@ class PredictView(CreateAPIView):
         serializer.save(
             image=converters.convert_mat_to_file(model.mat, filename=file.name),
             mask_image=converters.convert_mat_to_file(model.bin_mat, filename=file.name),
-            drug=model.drug,
             shape=model.shape,
             color=model.color,
             requested_at=requested_at,
