@@ -93,16 +93,19 @@ class Drug(models.Model):
     color = models.TextField(choices=ColorChoices.choices)
 
 
-def get_upload_path() -> str:
+def get_upload_dir() -> str:
     return 'prediction/image/'
+
+def get_upload_path(obj: Prediction, filename: str) -> str:
+    return get_upload_dir()+filename
 
 def get_upload_path_of_raw(obj: Prediction, filename: str) -> str:
     basename, extension = os.path.splitext(filename)
-    return os.path.join(get_upload_path(), basename+'-raw'+extension)
+    return get_upload_dir()+basename+'-raw'+extension
 
 def get_upload_path_of_mask(obj: Prediction, filename: str) -> str:
     basename, extension = os.path.splitext(filename)
-    return os.path.join(get_upload_path(), basename+'-mask'+extension)
+    return get_upload_dir()+basename+'-mask'+extension
 
 
 class Prediction(models.Model):
