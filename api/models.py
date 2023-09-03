@@ -109,7 +109,6 @@ class Prediction(models.Model):
     image = models.ImageField(upload_to=get_upload_path)
     raw_image = models.ImageField(upload_to=get_upload_path_of_raw, validators=[FileExtensionValidator(['jpg', 'png'])])
     mask_image = models.ImageField(upload_to=get_upload_path_of_mask)
-    drug = models.ForeignKey(Drug, on_delete=models.SET_NULL, null=True)
     shape = models.TextField(choices=ShapeChoices.choices)
     color = models.TextField(choices=ColorChoices.choices)
     created_at = models.DateTimeField(auto_now=True)
