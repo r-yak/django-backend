@@ -17,6 +17,7 @@ opencv-contrib-python = "^4.8.0.76"
 colorgram-py = "^1.2.0"
 pillow = "^10.0.0"
 colour-science = "^0.4.3"
+django-cors-headers = "^4.2.0"
 
 
 [build-system]
